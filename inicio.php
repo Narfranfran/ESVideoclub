@@ -2,7 +2,7 @@
 include "Soporte.php";
 
 //  PRUEBA GITHUB
-
+//chacho
 // Al convertir Soporte a una clase abstracta, ya no podemos instanciarla directamente.
 // $soporte1 = new Soporte("Tenet", 22, 3); 
 // echo "<strong>" . $soporte1->titulo . "</strong>"; 
