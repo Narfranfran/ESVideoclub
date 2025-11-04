@@ -5,7 +5,7 @@ class Soporte{
     protected $numero;
     protected $precio;
 
-    private const IVA = 0.21;
+    private static const IVA = 21.0;
 
     public function __construct($titulo, $numero, $precio)
     
@@ -15,6 +15,25 @@ class Soporte{
         $this->precio = $precio;
     }
 
+    /**
+     * Get the value of numero
+     */ 
+    public function getNumero()
+    {
+        return $this->numero;
+    }
 
+    /**
+     * Get the value of precio
+     */ 
+    public function getPrecio()
+    {
+        return $this->precio;
+    }
+
+    public function getPrecioConIVA()
+    {
+        return $this->precio * (1 + self::IVA / 100);
+    }
 }
 
