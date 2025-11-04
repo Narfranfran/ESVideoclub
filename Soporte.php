@@ -35,5 +35,13 @@ class Soporte{
     {
         return $this->precio * (1 + self::IVA / 100);
     }
+
+    public function muestraResumen(){
+        echo "<strong>{$this->titulo}</strong><br>";
+        echo "Precio: " . $this->getPrecio() . " euros<br>";
+        echo "Precio IVA incluido: " . $this->getPrecioConIVA() . " euros<br>";
+        echo $this->titulo . "<br>";
+        echo $this->precio . " € (IVA no incluido)<br>";
+    }
 }
 
