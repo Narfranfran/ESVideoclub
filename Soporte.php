@@ -1,6 +1,7 @@
 <?php
+require_once "Resumible.php";
 
-abstract class Soporte{
+abstract class Soporte implements Resumible{
     public $titulo;
     protected $numero;
     protected $precio;
