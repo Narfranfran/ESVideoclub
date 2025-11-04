@@ -1,7 +1,7 @@
 <?php
 
 class Soporte{
-    protected $titulo;
+    public $titulo;
     protected $numero;
     protected $precio;
 
