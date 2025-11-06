@@ -2,102 +2,88 @@
 
 class Cliente
 {
-    protected $nombre;
+    public $nombre;
+    private $numero;
+    private $soportesAlquilados = [];
+    private $numSoportesAlquilados = 0;
+    private $maxAlquilerConcurrente;
 
-    protected $numero;
-
-    protected $maxAlquilerConcurrente;
-
-    //Cuenta el número de soportes alquilados actualmente
-    protected $numSoportesAlquilados = 0;
-
-    protected $soportesAlquilados = [];
-
-    public function __construct($nombre, $numero, $maxAlquilerConcurrente = 3)
+    public function __construct(string $nombre, int $numero, int $maxAlquilerConcurrente = 3)
     {
         $this->nombre = $nombre;
         $this->numero = $numero;
         $this->maxAlquilerConcurrente = $maxAlquilerConcurrente;
     }
 
-    /**
-     * Get the value of numero
-     */
-    public function getNumero()
+    public function getNumero(): int
     {
         return $this->numero;
     }
 
-    /**
-     * Set the value of numero
-     *
-     * @return  self
-     */
-    public function setNumero($numero)
+    public function setNumero(int $numero): void
     {
         $this->numero = $numero;
-
-        return $this;
     }
 
-    public function muestraResumen()
+    public function getNumSoportesAlquilados(): int
     {
-        $cantidadActual = count($this->soportesAlquilados);
-        echo "Cliente: {$this->nombre} - Alquileres actuales: {$cantidadActual}<br>";
+        return $this->numSoportesAlquilados;
     }
 
-    public function tieneAlquilado(Soporte $s)
+    public function muestraResumen(): void
     {
-        foreach ($this->soportesAlquilados as $alquilados) {
-            if ($alquilados->getNumero() === $s->getNumero())
-                return true;
-        }
-        return false;
+        echo "<br><b>" . $this->nombre . "</b>";
+        echo "<br>Nº de alquileres: " . count($this->soportesAlquilados);
     }
 
-    //REVISAR DE AQUÍ HASTA EL FINAL
-    public function alquilar(Soporte $s)
+    public function tieneAlquilado(Soporte $s): bool
     {
-        if ($s->estaAlquilado()) {
-            echo "Imposible: el soporte #{$s->getNumero()} ya está alquilado.<br>";
+        return in_array($s, $this->soportesAlquilados);
+    }
+
+    public function alquilar(Soporte $s): bool
+    {
+        if ($this->tieneAlquilado($s)) {
+            echo "<br>El cliente ya tiene alquilado el soporte.";
             return false;
         }
-
 
         if (count($this->soportesAlquilados) >= $this->maxAlquilerConcurrente) {
-            echo "Imposible: {$this->nombre} ha alcanzado el máximo de alquileres concurrentes ({$this->maxAlquilerConcurrente}).<br>";
+            echo "<br>Este cliente ha superado el número máximo de alquileres.";
             return false;
         }
 
-
         $this->soportesAlquilados[] = $s;
-        $s->setAlquilado(true);
         $this->numSoportesAlquilados++;
-        echo "Éxito: {$this->nombre} ha alquilado el soporte #{$s->getNumero()} ({$s->titulo})<br>";
+        echo "<br>Alquiler realizado con éxito.";
         return true;
     }
 
     public function devolver(int $numSoporte): bool
     {
-        foreach ($this->soportesAlquilados as $idx => $al) {
-            if ($al->getNumero() === $numSoporte) {
-                $al->setAlquilado(false);
-                array_splice($this->soportesAlquilados, $idx, 1);
-                echo "Devolución: Soporte #{$numSoporte} devuelto por {$this->nombre}.<br>";
-                return true;
+        $alquilado = false;
+        foreach ($this->soportesAlquilados as $key => $soporte) {
+            if ($soporte->getNumero() == $numSoporte) {
+                unset($this->soportesAlquilados[$key]);
+                $alquilado = true;
+                break;
             }
         }
-        echo "Error: Soporte #{$numSoporte} no estaba alquilado por {$this->nombre}.<br>";
-        return false;
-    }
 
+        if ($alquilado) {
+            echo "<br>Devolución realizada con éxito.";
+        } else {
+            echo "<br>El cliente no tiene alquilado este soporte.";
+        }
+
+        return $alquilado;
+    }
 
     public function listarAlquileres(): void
     {
-        $n = count($this->soportesAlquilados);
-        echo "{$this->nombre} tiene {$n} alquiler(es) actuales.<br>";
-        foreach ($this->soportesAlquilados as $s) {
-            $s->muestraResumen();
+        echo "<br>El cliente " . $this->nombre . " tiene " . count($this->soportesAlquilados) . " soportes alquilados:";
+        foreach ($this->soportesAlquilados as $soporte) {
+            $soporte->muestraResumen();
         }
     }
 }

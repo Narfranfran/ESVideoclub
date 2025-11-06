@@ -6,71 +6,94 @@ require_once 'CintaVideo.php';
 require_once 'Dvd.php';
 require_once 'Juego.php';
 
-class Videoclub {
-    /** @var Soporte[] */
-    protected array $productos = [];
-    /** @var Cliente[] */
-    protected array $socios = [];
+class Videoclub
+{
+    private $nombre;
+    private $productos = [];
+    private $numProductos = 0;
+    private $socios = [];
+    private $numSocios = 0;
 
-    // Métodos públicos para crear e incluir productos
-    public function incluirCintaVideo(string $titulo, int $numRegistro, float $precio, int $duracion): CintaVideo {
-        $c = new CintaVideo($titulo, $numRegistro, $precio, $duracion);
-        $this->incluirProducto($c);
-        return $c;
+    public function __construct(string $nombre)
+    {
+        $this->nombre = $nombre;
     }
 
-    public function incluirDvd(string $titulo, int $numRegistro, float $precio, array $idiomas = [], string $formatoPantalla = '16:9'): Dvd {
-        $d = new Dvd($titulo, $numRegistro, $precio, $idiomas, $formatoPantalla);
-        $this->incluirProducto($d);
-        return $d;
+    private function incluirProducto(Soporte $producto): void
+    {
+        $this->productos[] = $producto;
+        $this->numProductos++;
     }
 
-    public function incluirJuego(string $titulo, int $numRegistro, float $precio, string $consola, int $minJugadores = 1, int $maxJugadores = 1): Juego {
-        $j = new Juego($titulo, $numRegistro, $precio, $consola, $minJugadores, $maxJugadores);
-        $this->incluirProducto($j);
-        return $j;
+    public function incluirCintaVideo(string $titulo, float $precio, int $duracion): void
+    {
+        $cintaVideo = new CintaVideo($titulo, $this->numProductos + 1, $precio, $duracion);
+        $this->incluirProducto($cintaVideo);
     }
 
-    public function incluirCliente(string $nombre, int $numero, int $maxAlquilerConcurrente = 3): Cliente {
-        $c = new Cliente($nombre, $numero, $maxAlquilerConcurrente);
-        $this->socios[] = $c;
-        return $c;
+    public function incluirDvd(string $titulo, float $precio, string $idiomas, string $formatoPantalla): void
+    {
+        $dvd = new Dvd($titulo, $this->numProductos + 1, $precio, $idiomas, $formatoPantalla);
+        $this->incluirProducto($dvd);
     }
 
-    // Operación privada para introducir un producto en el array
-    private function incluirProducto(Soporte $s): void {
-        $this->productos[] = $s;
+    public function incluirJuego(string $titulo, float $precio, string $consola, int $minJ, int $maxJ): void
+    {
+        $juego = new Juego($titulo, $this->numProductos + 1, $precio, $consola, $minJ, $maxJ);
+        $this->incluirProducto($juego);
     }
 
-    // Buscar productos o clientes por número de registro / número de socio
-    public function buscarProductoPorRegistro(int $numRegistro): ?Soporte {
-        foreach ($this->productos as $p) {
-            if ($p->getNumRegistro() === $numRegistro) return $p;
+    public function incluirSocio(string $nombre, int $maxAlquileresConcurrentes = 3): void
+    {
+        $socio = new Cliente($nombre, $this->numSocios + 1, $maxAlquileresConcurrentes);
+        $this->socios[] = $socio;
+        $this->numSocios++;
+    }
+
+    public function listarProductos(): void
+    {
+        echo "<br>Listado de productos:";
+        foreach ($this->productos as $producto) {
+            $producto->muestraResumen();
         }
-        return null;
     }
 
-    public function buscarClientePorNumero(int $numero): ?Cliente {
+    public function listarSocios(): void
+    {
+        echo "<br>Listado de socios:";
+        foreach ($this->socios as $socio) {
+            $socio->muestraResumen();
+        }
+    }
+
+    public function alquilarSocioProducto(int $numeroCliente, int $numeroSoporte): void
+    {
+        $socio = null;
         foreach ($this->socios as $s) {
-            if ($s->getNumero() === $numero) return $s;
+            if ($s->getNumero() == $numeroCliente) {
+                $socio = $s;
+                break;
+            }
         }
-        return null;
-    }
 
-    // listar resumenes (implementando polimorfismo Resumible)
-    public function listarProductos(): void {
-        echo "Listado de productos del videoclub:\n";
+        if ($socio === null) {
+            echo "<br>No existe el socio con número " . $numeroCliente;
+            return;
+        }
+
+        $producto = null;
         foreach ($this->productos as $p) {
-            $p->muestraResumen();
-            echo "--------------------------\n";
+            if ($p->getNumero() == $numeroSoporte) {
+                $producto = $p;
+                break;
+            }
         }
-    }
 
-    public function listarSocios(): void {
-        echo "Listado de socios del videoclub:\n";
-        foreach ($this->socios as $s) {
-            $s->muestraResumen();
-            echo "--------------------------\n";
+        if ($producto === null) {
+            echo "<br>No existe el producto con número " . $numeroSoporte;
+            return;
         }
+
+        $socio->alquilar($producto);
     }
 }

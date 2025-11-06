@@ -38,7 +38,7 @@ abstract class Soporte implements Resumible{
     }
 
     public function muestraResumen(){
-        echo "<strong>{$this->titulo}</strong><br>";
+        echo "<br><strong>{$this->titulo}</strong><br>";
         echo "Precio: " . $this->getPrecio() . " euros<br>";
         echo "Precio IVA incluido: " . $this->getPrecioConIVA() . " euros<br>";
         echo $this->titulo . "<br>";
